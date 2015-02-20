@@ -154,8 +154,8 @@ static double test_matrix_vector_no_class() {
 
 int main() {
     Vec2i64 v1;
-    v1.x() = 4;
-    v1.y() = 5;
+    v1.x = 4;
+    v1.y = 5;
     v1 = v1 * 8;
     v1 = 8 * v1;
     cout << v1 << endl;
@@ -217,7 +217,7 @@ int main() {
     }
     for (unsigned int i = 0; i < m4.height(); ++i) {
         for (unsigned int j = 0; j < m4.width(); ++j) {
-            m4[i][j] = i - j;
+            m4[i][j] = i * j;
         }
     }
 
@@ -241,9 +241,9 @@ int main() {
     cout << m3 * Matrix<double, 3>::zeros() << endl << endl;
 
     Vec3d vlarg;
-    vlarg.x() = 3.0;
-    vlarg.y() = 4.0;
-    vlarg.z() = 5.0;
+    vlarg.x = 3.0;
+    vlarg.y = 4.0;
+    vlarg.z = 5.0;
 
     cout << "MULTIPLED BY VEC3D" << endl << endl;
     cout << m3 * vlarg << endl << endl;

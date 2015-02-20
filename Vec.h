@@ -20,10 +20,16 @@ public:
         v = other.v;
     }
 
+    static Vec<T, N> zeros() {
+        Vec<T, N> rval;
+        rval.zero();
+        return rval;
+    }
+
     ~Vec<T, N>() {
     }
 
-    auto magnitude() -> decltype(T()) const {
+    auto magnitude() -> decltype(sqrt(T())) const {
         return sqrt(magnitude_square());
     }
 
@@ -175,99 +181,266 @@ Vec<T, N> operator*(U f, const Vec<T, N>& rhs) {
 }
 
 
-// It's a tad bit hacky
 template <typename T>
-class Vec2: public Vec<T, 2> {
+class Vec<T, 2> {
 public:
-    Vec2<T>() {
+    T x;
+    T y;
+
+    Vec<T, 2>() {
     }
 
-    Vec2<T>(T angle) {
-        x() = cos(angle);
-        y() = sin(angle);
+    Vec<T, 2>(T angle) :
+        x(cos(angle)),
+        y(sin(angle)) {
     }
 
-    Vec2<T>(T _x, T _y) {
-        x() = _x;
-        y() = _y;
+    Vec<T, 2>(const Vec<T, 2>& other) :
+        x(other.x),
+        y(other.y) {
     }
 
-    Vec2<T>(Vec<T, 2> rhs) {
-        x() = rhs[0];
-        y() = rhs[1];
+    Vec<T, 2>(T x, T y) :
+        x(x),
+        y(y) {
     }
 
-    T& x() {
-        return (*this)[0];
-    }
-
-    T x() const {
-        return (*this)[0];
-    }
-
-    T& y() {
-        return (*this)[1];
-    }
-
-    T y() const {
-        return (*this)[1];
+    ~Vec<T, 2>() {
     }
 
     auto theta() -> decltype(atan2(T(), T())) const {
-        return atan2(y(), x());
+        return atan2(y, x);
+    }
+
+    static Vec<T, 2> zeros() {
+        Vec<T, 2> rval;
+        rval.zero();
+        return rval;
+    }
+
+    auto magnitude() -> decltype(sqrt(T())) const {
+        return sqrt(magnitude_square());
+    }
+
+    T magnitude_square() const {
+        return x * x + y * y;
+    }
+
+    void zero() {
+        x = T();
+        y = T();
+    }
+
+    void normalize() {
+        *this /= magnitude();
+    }
+
+    Vec<T, 2>& operator+=(const Vec<T, 2>& rhs) {
+        x += rhs.x;
+        y += rhs.y;
+        return *this;
+    }
+
+    Vec<T, 2>& operator-=(const Vec<T, 2>& rhs) {
+        x -= rhs.x;
+        y -= rhs.y;
+        return *this;
+    }
+
+    Vec<T, 2>& operator*=(T factor) {
+        x *= factor;
+        y *= factor;
+        return *this;
+    }
+
+    Vec<T, 2>& operator/=(T factor) {
+        x /= factor;
+        y /= factor;
+        return *this;
+    }
+
+    Vec<T, 2>& operator=(const Vec<T, 2>& rhs) {
+        x = rhs.x;
+        y = rhs.y;
+        return *this;
+    }
+
+    Vec<T, 2> operator+(const Vec<T, 2>& rhs) const {
+        return Vec<T, 2>(x + rhs.x, y + rhs.y);
+    }
+
+    Vec<T, 2> operator-(const Vec<T, 2>& rhs) const {
+        return Vec<T, 2>(x - rhs.x, y - rhs.y);
+    }
+
+    Vec<T, 2> operator*(T factor) const {
+        return Vec<T, 2>(x * factor, y * factor);
+    }
+
+    Vec<T, 2> operator/(T factor) const {
+        return Vec<T, 2>(x / factor, y / factor);
+    }
+
+    // Not safe, Prefer accessing x and y directly to this
+    T& operator[](size_t index) {
+        return *(&x + index);
+    }
+
+    // Not safe, Prefer accessing x and y directly to this
+    T operator[](size_t index) const {
+        return *(&x + index);
+    }
+
+    bool operator==(const Vec<T, 2>& rhs) const {
+        return x == rhs.x && y == rhs.y;
+    }
+
+    bool operator!=(const Vec<T, 2>& rhs) const {
+        return !(*this == rhs);
+    }
+
+    T dot(const Vec<T, 2>& other) const {
+        return x * other.x + y * other.y;
+    }
+
+    size_t size() const {
+        return 2;
     }
 };
 
-typedef Vec2<float> Vec2f;
-typedef Vec2<double> Vec2d;
-typedef Vec2<int8_t> Vec2i8;
-typedef Vec2<int32_t> Vec2i32;
-typedef Vec2<int64_t> Vec2i64;
-typedef Vec2<uint8_t> Vec2u8;
-typedef Vec2<uint32_t> Vec2u32;
-typedef Vec2<uint64_t> Vec2u64;
+typedef Vec<float, 2> Vec2f;
+typedef Vec<double, 2> Vec2d;
+typedef Vec<int8_t, 2> Vec2i8;
+typedef Vec<int32_t, 2> Vec2i32;
+typedef Vec<int64_t, 2> Vec2i64;
+typedef Vec<uint8_t, 2> Vec2u8;
+typedef Vec<uint32_t, 2> Vec2u32;
+typedef Vec<uint64_t, 2> Vec2u64;
 
-// ^^
 template <typename T>
-class Vec3: public Vec<T, 3> {
+class Vec<T, 3> {
 public:
-    Vec3<T>() {
+    T x;
+    T y;
+    T z;
+
+    Vec<T, 3>() {
     }
 
-    Vec3<T>(T _x, T _y, T _z) {
-        x() = _x;
-        y() = _y;
-        z() = _z;
+    Vec<T, 3>(const Vec<T, 3>& other) :
+        x(other.x),
+        y(other.y),
+        z(other.z) {
     }
 
-    Vec3<T>(Vec<T, 3> rhs) {
-        x() = rhs[0];
-        y() = rhs[1];
-        z() = rhs[2];
+    Vec<T, 3>(T x, T y, T z) :
+        x(x),
+        y(y),
+        z(z) {
     }
 
-    T& x() {
-        return (*this)[0];
+    ~Vec<T, 3>() {
     }
 
-    T x() const {
-        return (*this)[0];
+    static Vec<T, 3> zeros() {
+        Vec<T, 3> rval;
+        rval.zero();
+        return rval;
     }
 
-    T& y() {
-        return (*this)[1];
+    auto magnitude() -> decltype(sqrt(T())) const {
+        return sqrt(magnitude_square());
     }
 
-    T y() const {
-        return (*this)[1];
+    T magnitude_square() const {
+        return x * x + y * y + z * z;
     }
 
-    T& z() {
-        return (*this)[2];
+    void zero() {
+        x = T();
+        y = T();
+        z = T();
     }
 
-    T z() const {
-        return (*this)[2];
+    void normalize() {
+        *this /= magnitude();
+    }
+
+    Vec<T, 3>& operator+=(const Vec<T, 3>& rhs) {
+        x += rhs.x;
+        y += rhs.y;
+        z += rhs.z;
+        return *this;
+    }
+
+    Vec<T, 3>& operator-=(const Vec<T, 3>& rhs) {
+        x -= rhs.x;
+        y -= rhs.y;
+        z -= rhs.z;
+        return *this;
+    }
+
+    Vec<T, 3>& operator*=(T factor) {
+        x *= factor;
+        y *= factor;
+        z *= factor;
+        return *this;
+    }
+
+    Vec<T, 3>& operator/=(T factor) {
+        x /= factor;
+        y /= factor;
+        z /= factor;
+        return *this;
+    }
+
+    Vec<T, 3>& operator=(const Vec<T, 3>& rhs) {
+        x = rhs.x;
+        y = rhs.y;
+        z = rhs.z;
+        return *this;
+    }
+
+    Vec<T, 3> operator+(const Vec<T, 3>& rhs) const {
+        return Vec<T, 3>(x + rhs.x, y + rhs.y, z + rhs.z);
+    }
+
+    Vec<T, 3> operator-(const Vec<T, 3>& rhs) const {
+        return Vec<T, 3>(x - rhs.x, y - rhs.y, z - rhs.z);
+    }
+
+    Vec<T, 3> operator*(T factor) const {
+        return Vec<T, 3>(x * factor, y * factor, z * factor);
+    }
+
+    Vec<T, 3> operator/(T factor) const {
+        return Vec<T, 3>(x / factor, y / factor, z / factor);
+    }
+
+    // Not safe, Prefer accessing x, y, and z directly to this
+    T& operator[](size_t index) {
+        return *(&x + index);
+    }
+
+    // Not safe, Prefer accessing x, y, and z directly to this
+    T operator[](size_t index) const {
+        return *(&x + index);
+    }
+
+    bool operator==(const Vec<T, 3>& rhs) const {
+        return x == rhs.x && y == rhs.y && z == rhs.z;
+    }
+
+    bool operator!=(const Vec<T, 3>& rhs) const {
+        return !(*this == rhs);
+    }
+
+    T dot(const Vec<T, 3>& other) const {
+        return x * other.x + y * other.y + z * other.z;
+    }
+
+    size_t size() const {
+        return 3;
     }
 
     T pitch() const {
@@ -282,24 +455,22 @@ public:
         return 0.0;
     }
 
-    Vec3<T> cross(const Vec3<T>& other) const {
-        T _x = y() * other.z() - z() * other.y();
-        T _y = z() * other.x() - x() * other.z();
-        T _z = x() * other.y() - y() * other.x();
-        return Vec3<T>(_x, _y, _z);
+    Vec<T, 3> cross(const Vec<T, 3>& other) const {
+        return Vec<T, 3>(y * other.z - z * other.y,
+                         z * other.x - x * other.z,
+                         x * other.y - y * other.x);
     }
 };
 
 
-
-typedef Vec3<float> Vec3f;
-typedef Vec3<double> Vec3d;
-typedef Vec3<int8_t> Vec3i8;
-typedef Vec3<int32_t> Vec3i32;
-typedef Vec3<int64_t> Vec3i64;
-typedef Vec3<uint8_t> Vec3u8;
-typedef Vec3<uint32_t> Vec3u32;
-typedef Vec3<uint64_t> Vec3u64;
+typedef Vec<float, 3> Vec3f;
+typedef Vec<double, 3> Vec3d;
+typedef Vec<int8_t, 3> Vec3i8;
+typedef Vec<int32_t, 3> Vec3i32;
+typedef Vec<int64_t, 3> Vec3i64;
+typedef Vec<uint8_t, 3> Vec3u8;
+typedef Vec<uint32_t, 3> Vec3u32;
+typedef Vec<uint64_t, 3> Vec3u64;
 
 #endif
 
