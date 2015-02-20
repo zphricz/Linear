@@ -17,25 +17,36 @@ private:
 
 public:
     Vec<T, N>() {
+        static_assert(N > 0, "Vector cannot have a zero dimension");
     }
 
     Vec<T, N>(const Vec<T, N>& other) {
+        static_assert(N > 0, "Vector cannot have a zero dimension");
         v = other.v;
     }
 
-    Vec<T, N>(const Matrix<T, 1, N>& other) {
-        for (size_t i = 0; i < N; ++i) {
-            v[i] = other[0][i];
-        }
-    }
-
-    Vec<T, N>(const Matrix<T, N, 1>& other) {
-        for (size_t i = 0; i < N; ++i) {
+    template <size_t M>
+    Vec<T, M>(const Matrix<T, M, 1>& other) {
+        static_assert(M > 0, "Vector cannot have a zero dimension");
+        for (size_t i = 0; i < M; ++i) {
             v[i] = other[i][0];
         }
     }
 
+    template <size_t M>
+    Vec<T, M>(const Matrix<T, 1, M>& other) {
+        static_assert(M > 0, "Vector cannot have a zero dimension");
+        for (size_t i = 0; i < M; ++i) {
+            v[i] = other[0][i];
+        }
+    }
+
+    Vec<T, 1>(const Matrix<T, 1, 1>& other) {
+        v[0] = other[0][0];
+    }
+
     static Vec<T, N> zeros() {
+        static_assert(N > 0, "Vector cannot have a zero dimension");
         Vec<T, N> rval;
         rval.zero();
         return rval;
@@ -230,17 +241,17 @@ public:
         y(y) {
     }
 
+    static Vec<T, 2> zeros() {
+        Vec<T, 2> rval;
+        rval.zero();
+        return rval;
+    }
+
     ~Vec<T, 2>() {
     }
 
     auto theta() -> decltype(atan2(T(), T())) const {
         return atan2(y, x);
-    }
-
-    static Vec<T, 2> zeros() {
-        Vec<T, 2> rval;
-        rval.zero();
-        return rval;
     }
 
     auto magnitude() -> decltype(sqrt(T())) const {
@@ -376,13 +387,13 @@ public:
         z(z) {
     }
 
-    ~Vec<T, 3>() {
-    }
-
     static Vec<T, 3> zeros() {
         Vec<T, 3> rval;
         rval.zero();
         return rval;
+    }
+
+    ~Vec<T, 3>() {
     }
 
     auto magnitude() -> decltype(sqrt(T())) const {

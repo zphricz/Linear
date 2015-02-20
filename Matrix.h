@@ -10,9 +10,11 @@ private:
 
 public:
     Matrix<T, M, N>() {
+        static_assert(M > 0 && N > 0, "Matrix cannot have a zero dimension");
     }
 
     Matrix<T, M, N>(const Matrix<T, M, N>& other) {
+        static_assert(M > 0 && N > 0, "Matrix cannot have a zero dimension");
         v = other.v;
     }
 
@@ -20,12 +22,14 @@ public:
     }
 
     static Matrix<T, M, N> zeros() {
+        static_assert(M > 0 && N > 0, "Matrix cannot have a zero dimension");
         Matrix<T, M, N> rval;
         rval.zero();
         return rval;
     }
 
     static Matrix<T, 1, N> from_row(const Vec<T, N>& other) {
+        static_assert(M > 0 && N > 0, "Matrix cannot have a zero dimension");
         Matrix<T, 1, N> rval;
         for (size_t i = 0; i < N; ++i) {
             rval[0][i] = other[i];
@@ -34,6 +38,7 @@ public:
     }
 
     static Matrix<T, M, 1> from_col(const Vec<T, M>& other) {
+        static_assert(M > 0 && N > 0, "Matrix cannot have a zero dimension");
         Matrix<T, M, 1> rval;
         for (size_t i = 0; i < M; ++i) {
             rval[i][0] = other[i];
@@ -42,6 +47,7 @@ public:
     }
 
     static Matrix<T, M, N> identity() {
+        static_assert(M > 0 && N > 0, "Matrix cannot have a zero dimension");
         static_assert(M == N, "Identity matrix must be square");
         Matrix<T, M, N> rval;
         rval.zero();
@@ -207,7 +213,80 @@ public:
         }
         return *this;
     }
+
+    // This is really slow for large matrices (and would also be very prone
+    // to stack overflows)
+    T determinant() const {
+        static_assert(M == N, "Determinant defined only for square matrices");
+        return _determinant(*this);
+    }
+
+    // A very slow method of solving a linear equation. It uses the determinant
+    // to perform its calclations
+    Matrix<T, N, 1> slow_solve(const Matrix<T, N, 1>& rhs) const{
+        static_assert(M == N, "Only square matrices are solvable");
+        Matrix<T, N, 1> rval;
+        T d = determinant();
+        for (size_t j = 0; j < N; ++j) {
+            Matrix<T, N> temp = *this;
+            for (size_t i = 0; i < N; ++i) {
+                temp[i][j] = rhs[i][0];
+            }
+            rval[j][0] = temp.determinant() / d;
+        }
+        return rval;
+    }
+
+    // A very slow method of solving a linear equation. It uses the determinant
+    // to perform its calclations
+    Matrix<T, N, 1> slow_solve(const Vec<T, N>& rhs) const{
+        static_assert(M == N, "Only square matrices are solvable");
+        Matrix<T, N, 1> rval;
+        T d = determinant();
+        for (size_t j = 0; j < N; ++j) {
+            Matrix<T, N> temp = *this;
+            for (size_t i = 0; i < N; ++i) {
+                temp[i][j] = rhs[i];
+            }
+            rval[j][0] = temp.determinant() / d;
+        }
+        return rval;
+    }
 };
+
+// This is really slow for large matrices (and would also be very prone
+// to stack overflows)
+template <typename T, size_t N>
+T _determinant(const Matrix<T, N>& mat) {
+    T rval(0);
+    bool sign = true;
+    for (size_t skip = 0; skip < N; ++skip) {
+        Matrix<T, N - 1> sub_mat;
+        for (size_t i = 1; i < N; ++i) {
+            for (size_t j = 0; j < skip; ++j) {
+                sub_mat[i - 1][j] = mat[i][j];
+            }
+        }
+        for (size_t i = 1; i < N; ++i) {
+            for (size_t j = skip + 1; j < N; ++j) {
+                sub_mat[i - 1][j - 1] = mat[i][j];
+            }
+        }
+        if (sign) {
+            rval += mat[0][skip] * _determinant(sub_mat);
+        } else {
+            rval -= mat[0][skip] * _determinant(sub_mat);
+        }
+        sign = !sign;
+    }
+    return rval;
+}
+
+// Specialize the above function so that it terminates
+template <typename T>
+T _determinant(const Matrix<T, 1>& mat) {
+    return mat[0][0];
+}
 
 /* This needed the extra template parameter to get the compiler to stop
  * producing errors on the potentially mismatched types of the Vector

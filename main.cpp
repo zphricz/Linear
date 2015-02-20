@@ -176,7 +176,7 @@ int main() {
     cout << "TRANSPOSED" << endl << endl;
     cout << m << endl << endl;
 
-    cout << "MULTIPLED BY" << endl << endl;
+    cout << "MULTIPLIED BY" << endl << endl;
 
     Vec<double, 5> rhs;
     for (unsigned int j = 0; j < rhs.size(); ++j) {
@@ -240,13 +240,51 @@ int main() {
     cout << "MULTIPLED BY ZEROS" << endl << endl;
     cout << m3 * Matrix<double, 3>::zeros() << endl << endl;
 
-    Vec3d vlarg;
-    vlarg.x = 3.0;
-    vlarg.y = 4.0;
-    vlarg.z = 5.0;
+    Vec3d test_vec;
+    test_vec.x = 3.0;
+    test_vec.y = 4.0;
+    test_vec.z = 5.0;
 
     cout << "MULTIPLED BY VEC3D" << endl << endl;
-    cout << m3 * vlarg << endl << endl;
+    cout << test_vec << endl << endl;
+    cout << m3 * test_vec << endl << endl;
+
+    Matrix<double, 3> m_determine;
+    m_determine[0][0] = 0.0;
+    m_determine[0][1] = 0.1;
+    m_determine[0][2] = 0.2;
+    m_determine[1][0] = 4.0;
+    m_determine[1][1] = -3.2;
+    m_determine[1][2] = 0.0;
+    m_determine[2][0] = 2.1;
+    m_determine[2][1] = 2.1;
+    m_determine[2][2] = 9.4;
+    cout << "THE DETERMINANT OF" << endl << endl;
+
+    cout << m_determine << endl << endl;
+
+    cout << m_determine.determinant() << endl << endl;
+
+    Matrix<double, 3> m_solve;
+    m_solve[0][0] = 8.0;
+    m_solve[0][1] = 2.0;
+    m_solve[0][2] = -4.0;
+    m_solve[1][0] = 3.0;
+    m_solve[1][1] = 8.0;
+    m_solve[1][2] = 6.0;
+    m_solve[2][0] = 2.0;
+    m_solve[2][1] = 9.0;
+    m_solve[2][2] = 4.5;
+    Vec<double, 3> m_rhs;
+    m_rhs[0] = 4.0;
+    m_rhs[1] = 3.0;
+    m_rhs[2] = 4.0;
+    cout << "THE SOLUTION TO" << endl << endl;
+
+    cout << m_solve << endl << endl;
+    cout << m_rhs << endl << endl;
+
+    cout << m_solve.slow_solve(m_rhs) << endl << endl;
 
 #ifdef TEST_MATRIX_VECTOR
     cout << "CLASS VS NON-CLASS MATRIX VECTOR MULTIPLY TEST" << endl << endl;
