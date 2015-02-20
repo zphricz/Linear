@@ -3,12 +3,16 @@
 
 #include <cmath>
 #include <array>
+#include <iomanip>
 #include <stdint.h>
+#include <sstream>
 
 template <typename T, size_t N>
-struct Vec {
+class Vec {
+private:
     std::array<T, N> v;
 
+public:
     Vec<T, N>() {
     }
 
@@ -129,7 +133,33 @@ struct Vec {
         }
         return sum;
     }
+
+    size_t size() const {
+        return N;
+    }
 };
+
+/* Prints out the vector as a column vector
+ */
+template <typename T, size_t N>
+std::ostream& operator<<(std::ostream& os, const Vec<T, N>& rhs) {
+    int max_size = 0;
+    for (size_t i = 0; i < N; ++i) {
+        std::ostringstream s;
+        s << rhs[i];
+        std::string str = s.str();
+        if (str.size() > max_size) {
+            max_size = str.size();
+        }
+    }
+    for (size_t i = 0; i < N; ++i) {
+        os << "[ " << std::setw(max_size) << rhs[i] << " ]";
+        if (i != N - 1) {
+            os << std::endl;
+        }
+    }
+    return os;
+}
 
 /* This needed the extra template parameter to get the compiler to stop
  * producing errors on the potentially mismatched types of the Vector
@@ -147,8 +177,8 @@ Vec<T, N> operator*(U f, const Vec<T, N>& rhs) {
 
 // It's a tad bit hacky
 template <typename T>
-struct Vec2: public Vec<T, 2> {
-
+class Vec2: public Vec<T, 2> {
+public:
     Vec2<T>() {
     }
 
@@ -199,8 +229,8 @@ typedef Vec2<uint64_t> Vec2u64;
 
 // ^^
 template <typename T>
-struct Vec3: public Vec<T, 3> {
-
+class Vec3: public Vec<T, 3> {
+public:
     Vec3<T>() {
     }
 
@@ -259,6 +289,7 @@ struct Vec3: public Vec<T, 3> {
         return Vec3<T>(_x, _y, _z);
     }
 };
+
 
 
 typedef Vec3<float> Vec3f;
