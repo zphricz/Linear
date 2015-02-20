@@ -23,7 +23,7 @@ public:
     ~Vec<T, N>() {
     }
 
-    auto magnitude() -> decltype(sqrt(v[0])) const {
+    auto magnitude() -> decltype(T()) const {
         return sqrt(magnitude_square());
     }
 
@@ -143,7 +143,7 @@ public:
  */
 template <typename T, size_t N>
 std::ostream& operator<<(std::ostream& os, const Vec<T, N>& rhs) {
-    int max_size = 0;
+    size_t max_size = 0;
     for (size_t i = 0; i < N; ++i) {
         std::ostringstream s;
         s << rhs[i];
@@ -213,7 +213,7 @@ public:
         return (*this)[1];
     }
 
-    auto theta() -> decltype(atan2(x(), y())) const {
+    auto theta() -> decltype(atan2(T(), T())) const {
         return atan2(y(), x());
     }
 };
