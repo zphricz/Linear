@@ -7,6 +7,9 @@
 #include <stdint.h>
 #include <sstream>
 
+template <typename T, size_t M, size_t N>
+class Matrix;
+
 template <typename T, size_t N>
 class Vec {
 private:
@@ -18,6 +21,18 @@ public:
 
     Vec<T, N>(const Vec<T, N>& other) {
         v = other.v;
+    }
+
+    Vec<T, N>(const Matrix<T, 1, N>& other) {
+        for (size_t i = 0; i < N; ++i) {
+            v[i] = other[0][i];
+        }
+    }
+
+    Vec<T, N>(const Matrix<T, N, 1>& other) {
+        for (size_t i = 0; i < N; ++i) {
+            v[i] = other[i][0];
+        }
     }
 
     static Vec<T, N> zeros() {
@@ -190,14 +205,24 @@ public:
     Vec<T, 2>() {
     }
 
-    Vec<T, 2>(T angle) :
-        x(cos(angle)),
-        y(sin(angle)) {
-    }
-
     Vec<T, 2>(const Vec<T, 2>& other) :
         x(other.x),
         y(other.y) {
+    }
+
+    Vec<T, 2>(const Matrix<T, 1, 2>& other) :
+        x(other[0][0]),
+        y(other[0][1]) {
+    }
+
+    Vec<T, 2>(const Matrix<T, 2, 1>& other) :
+        x(other[0][0]),
+        y(other[1][0]) {
+    }
+
+    Vec<T, 2>(T angle) :
+        x(cos(angle)),
+        y(sin(angle)) {
     }
 
     Vec<T, 2>(T x, T y) :
@@ -331,6 +356,18 @@ public:
         x(other.x),
         y(other.y),
         z(other.z) {
+    }
+
+    Vec<T, 3>(const Matrix<T, 1, 3>& other) :
+        x(other[0][0]),
+        y(other[0][1]),
+        z(other[0][2]) {
+    }
+
+    Vec<T, 3>(const Matrix<T, 3, 1>& other) :
+        x(other[0][0]),
+        y(other[1][0]),
+        z(other[2][0]) {
     }
 
     Vec<T, 3>(T x, T y, T z) :

@@ -6,10 +6,14 @@
 template <typename T, size_t M, size_t N = M>
 class Matrix {
 private:
-    std::array<Vec<T, N>, M> v;
+    std::array<std::array<T, N>, M> v;
 
 public:
     Matrix<T, M, N>() {
+    }
+
+    Matrix<T, M, N>(const Matrix<T, M, N>& other) {
+        v = other.v;
     }
 
     ~Matrix<T, M, N>() {
@@ -18,6 +22,22 @@ public:
     static Matrix<T, M, N> zeros() {
         Matrix<T, M, N> rval;
         rval.zero();
+        return rval;
+    }
+
+    static Matrix<T, 1, N> from_row(const Vec<T, N>& other) {
+        Matrix<T, 1, N> rval;
+        for (size_t i = 0; i < N; ++i) {
+            rval[0][i] = other[i];
+        }
+        return rval;
+    }
+
+    static Matrix<T, M, 1> from_col(const Vec<T, M>& other) {
+        Matrix<T, M, 1> rval;
+        for (size_t i = 0; i < M; ++i) {
+            rval[i][0] = other[i];
+        }
         return rval;
     }
 
@@ -39,11 +59,14 @@ public:
         }
     }
 
-    const Vec<T, N>& row(size_t m) const {
-        return v[m];
+    Vec<T, N> row(size_t m) const {
+        Vec<T, N> rval;
+        for (size_t i = 0; i < N; ++i) {
+            rval[i] = v[m][i];
+        }
+        return rval;
     }
 
-    // Prefer not to use this function as it is not fast
     Vec<T, M> col(size_t n) const {
         Vec<T, M> rval;
         for (size_t i = 0; i < M; ++i) {
@@ -70,11 +93,11 @@ public:
         return N;
     }
 
-    Vec<T, N>& operator[](size_t i) {
+    std::array<T, N>& operator[](size_t i) {
         return v[i];
     }
 
-    const Vec<T, N>& operator[](size_t i) const {
+    const std::array<T, N>& operator[](size_t i) const {
         return v[i];
     }
 
@@ -119,7 +142,10 @@ public:
     Vec<T, M> operator*(const Vec<T, N>& rhs) const {
         Vec<T, M> rval;
         for (size_t i = 0; i < M; ++i) {
-            rval[i] = row(i).dot(rhs);
+            rval[i] = T();
+            for (size_t j = 0; j < N; ++j) {
+                rval[i] += v[i][j] * rhs[j];
+            }
         }
         return rval;
     }
@@ -134,11 +160,11 @@ public:
         return rval;
     }
 
-    template <size_t U>
-    Matrix<T, M, U> operator*(const Matrix<T, N, U>& rhs) const {
-        Matrix<T, M, U> rval;
+    template <size_t O>
+    Matrix<T, M, O> operator*(const Matrix<T, N, O>& rhs) const {
+        Matrix<T, M, O> rval;
         for (size_t i = 0; i < M; ++i) {
-            for (size_t j = 0; j < U; ++j) {
+            for (size_t j = 0; j < O; ++j) {
                 rval[i][j] = T();
                 for (size_t k = 0; k < N; ++k) {
                     rval[i][j] += v[i][k] * rhs[k][j];
@@ -171,20 +197,6 @@ public:
         static_assert(M == N, "Matrix dimensions must agree for in place "
                               "matrix multiply");
         return *this = *this * rhs;
-
-        /*
-         * This implementation is more performant, but fails when &rhs == this
-         */
-        for (size_t i = 0; i < M; ++i) {
-            auto r = row(i);
-            for (size_t j = 0; j < M; ++j) {
-                v[i][j] = T();
-                for (size_t k = 0; k < M; ++k) {
-                    v[i][j] += r[k] * rhs[k][j];
-                }
-            }
-        }
-        return *this;
     }
 
     Matrix<T, M, N>& operator/=(T factor) {
