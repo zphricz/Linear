@@ -285,6 +285,13 @@ int main() {
     cout << m_rhs << endl << endl;
 
     cout << m_solve.slow_solve(m_rhs) << endl << endl;
+    cout << m_solve.slow_solve(Matrix<double, 3, 1>(m_rhs)) << endl << endl;
+
+    // Testing conversions
+    Vec<double, 4, false> v_row;
+    Vec<double, 4> v_col = v_row;
+    Matrix<double, 4, 1> col_mat = v_col;
+    Matrix<double, 1, 4> row_mat = v_row;
 
 #ifdef TEST_MATRIX_VECTOR
     cout << "CLASS VS NON-CLASS MATRIX VECTOR MULTIPLY TEST" << endl << endl;

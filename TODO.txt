@@ -1,0 +1,3 @@
+- Implement pitch roll and yaw in Vec<T, 3>
+- Add initializer list intialization for Matrix and Vec
+- Add a fast linear equation solver
