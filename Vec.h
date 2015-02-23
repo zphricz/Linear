@@ -17,46 +17,69 @@ private:
     std::array<T, N> v;
 
 public:
-    Vec<T, N, C>() {
+    Vec() {
         static_assert(N > 0, "Vector cannot have a zero dimension");
     }
 
-    template<bool B>
-    Vec<T, N, C>(const Vec<T, N, B>& other) {
-        static_assert(N > 0, "Vector cannot have a zero dimension");
+    Vec(const Vec<T, N, C>& other) { static_assert(N > 0, "Vector cannot have a zero dimension");
         for (size_t i = 0; i < N; ++i) {
             v[i] = other[i];
         }
     }
 
     template <size_t M>
-    Vec<T, M>(const Matrix<T, M, 1>& other) {
+    Vec(const Matrix<T, 1, M>& other) {
         static_assert(M > 0, "Vector cannot have a zero dimension");
-        for (size_t i = 0; i < M; ++i) {
-            v[i] = other[i][0];
-        }
-    }
-
-    template <size_t M>
-    Vec<T, M, false>(const Matrix<T, 1, M>& other) {
-        static_assert(M > 0, "Vector cannot have a zero dimension");
+        static_assert(N == M, "Mismatched vector/matrix length");
+        static_assert(C == false, "Mismatched vector/matrix dimensions");
         for (size_t i = 0; i < M; ++i) {
             v[i] = other[0][i];
         }
     }
 
-    Vec<T, 1>(const Matrix<T, 1, 1>& other) {
+    template <size_t M>
+    Vec(const Matrix<T, M, 1>& other) {
+        static_assert(M > 0, "Vector cannot have a zero dimension");
+        static_assert(N == M, "Mismatched vector/matrix length");
+        static_assert(C == true, "Mismatched vector/matrix dimensions");
+        for (size_t i = 0; i < M; ++i) {
+            v[i] = other[i][0];
+        }
+    }
+
+    Vec(const Matrix<T, 1, 1>& other) {
+        static_assert(N == 1, "Mismatched vector/matrix length");
         v[0] = other[0][0];
     }
 
-    static Vec<T, N, C> zeros() {
+    template<bool B>
+    static Vec<T, N, false> to_row(const Vec<T, N, B>& other) {
+        Vec<T, N, false> rval;
+        static_assert(N > 0, "Vector cannot have a zero dimension");
+        for (size_t i = 0; i < N; ++i) {
+            rval[i] = other[i];
+        }
+        return rval;
+    }
+
+    template<bool B>
+    static Vec<T, N> to_col(const Vec<T, N, B>& other) {
+        Vec<T, N> rval;
+        static_assert(N > 0, "Vector cannot have a zero dimension");
+        for (size_t i = 0; i < N; ++i) {
+            rval[i] = other[i];
+        }
+        return rval;
+    }
+
+    static Vec zeros() {
         static_assert(N > 0, "Vector cannot have a zero dimension");
         Vec<T, N, C> rval;
         rval.zero();
         return rval;
     }
 
-    ~Vec<T, N, C>() {
+    ~Vec() {
     }
 
     auto magnitude() -> decltype(sqrt(T())) const {
@@ -81,40 +104,35 @@ public:
         *this /= magnitude();
     }
 
-    Vec<T, N, C>& operator+=(const Vec<T, N, C>& rhs) {
+    Vec& operator+=(const Vec<T, N, C>& rhs) {
         for (size_t i = 0; i < N; ++i) {
             v[i] += rhs[i];
         }
         return *this;
     }
 
-    Vec<T, N, C>& operator-=(const Vec<T, N, C>& rhs) {
+    Vec& operator-=(const Vec<T, N, C>& rhs) {
         for (size_t i = 0; i < N; ++i) {
             v[i] -= rhs[i];
         }
         return *this;
     }
 
-    Vec<T, N, C>& operator*=(T factor) {
+    Vec& operator*=(T factor) {
         for (size_t i = 0; i < N; ++i) {
             v[i] *= factor;
         }
         return *this;
     }
 
-    Vec<T, N, C>& operator/=(T factor) {
+    Vec& operator/=(T factor) {
         for (size_t i = 0; i < N; ++i) {
             v[i] /= factor;
         }
         return *this;
     }
 
-    Vec<T, N, C>& operator=(const Vec<T, N, C>& rhs) {
-        v = rhs.v;
-        return *this;
-    }
-
-    Vec<T, N, C> operator+(const Vec<T, N, C>& rhs) const {
+    Vec operator+(const Vec<T, N, C>& rhs) const {
         Vec<T, N, C> new_vec;
         for (size_t i = 0; i < N; ++i) {
             new_vec[i] = v[i] + rhs[i];
@@ -122,7 +140,7 @@ public:
         return new_vec;
     }
 
-    Vec<T, N, C> operator-(const Vec<T, N, C>& rhs) const {
+    Vec operator-(const Vec<T, N, C>& rhs) const {
         Vec<T, N, C> new_vec;
         for (size_t i = 0; i < N; ++i) {
             new_vec[i] = v[i] - rhs[i];
@@ -130,7 +148,7 @@ public:
         return new_vec;
     }
 
-    Vec<T, N, C> operator*(T factor) const {
+    Vec operator*(T factor) const {
         Vec<T, N, C> new_vec;
         for (size_t i = 0; i < N; ++i) {
             new_vec[i] = v[i] * factor;
@@ -138,7 +156,7 @@ public:
         return new_vec;
     }
 
-    Vec<T, N, C> operator/(T factor) const {
+    Vec operator/(T factor) const {
         Vec<T, N, C> new_vec;
         for (size_t i = 0; i < N; ++i) {
             new_vec[i] = v[i] / factor;
@@ -224,42 +242,59 @@ public:
     T x;
     T y;
 
-    Vec<T, 2, C>() {
+    Vec() {
     }
 
-    template<bool B>
-    Vec<T, 2, C>(const Vec<T, 2, B>& other) :
+    Vec(const Vec<T, 2, C>& other) :
         x(other.x),
         y(other.y) {
     }
 
-    Vec<T, 2, C>(const Matrix<T, 1, 2>& other) :
+    template<bool B>
+    static Vec<T, 2, false> to_row(const Vec<T, 2, B>& other) {
+        Vec<T, 2, false> rval;
+        rval.x = other.x;
+        rval.y = other.y;
+        return rval;
+    }
+
+    template<bool B>
+    static Vec<T, 2> to_col(const Vec<T, 2, B>& other) {
+        Vec<T, 2> rval;
+        rval.x = other.x;
+        rval.y = other.y;
+        return rval;
+    }
+
+    Vec(const Matrix<T, 1, 2>& other) :
         x(other[0][0]),
         y(other[0][1]) {
+        static_assert(C == false, "Mismatched vector/matrix dimensions");
     }
 
-    Vec<T, 2, C>(const Matrix<T, 2, 1>& other) :
+    Vec(const Matrix<T, 2, 1>& other) :
         x(other[0][0]),
         y(other[1][0]) {
+        static_assert(C == true, "Mismatched vector/matrix dimensions");
     }
 
-    Vec<T, 2, C>(T angle) :
+    Vec(T angle) :
         x(cos(angle)),
         y(sin(angle)) {
     }
 
-    Vec<T, 2, C>(T x, T y) :
+    Vec(T x, T y) :
         x(x),
         y(y) {
     }
 
-    static Vec<T, 2, C> zeros() {
+    static Vec zeros() {
         Vec<T, 2, C> rval;
         rval.zero();
         return rval;
     }
 
-    ~Vec<T, 2, C>() {
+    ~Vec() {
     }
 
     auto theta() -> decltype(atan2(T(), T())) const {
@@ -283,49 +318,43 @@ public:
         *this /= magnitude();
     }
 
-    Vec<T, 2, C>& operator+=(const Vec<T, 2, C>& rhs) {
+    Vec& operator+=(const Vec<T, 2, C>& rhs) {
         x += rhs.x;
         y += rhs.y;
         return *this;
     }
 
-    Vec<T, 2, C>& operator-=(const Vec<T, 2, C>& rhs) {
+    Vec& operator-=(const Vec<T, 2, C>& rhs) {
         x -= rhs.x;
         y -= rhs.y;
         return *this;
     }
 
-    Vec<T, 2, C>& operator*=(T factor) {
+    Vec& operator*=(T factor) {
         x *= factor;
         y *= factor;
         return *this;
     }
 
-    Vec<T, 2, C>& operator/=(T factor) {
+    Vec& operator/=(T factor) {
         x /= factor;
         y /= factor;
         return *this;
     }
 
-    Vec<T, 2, C>& operator=(const Vec<T, 2, C>& rhs) {
-        x = rhs.x;
-        y = rhs.y;
-        return *this;
-    }
-
-    Vec<T, 2, C> operator+(const Vec<T, 2, C>& rhs) const {
+    Vec operator+(const Vec<T, 2, C>& rhs) const {
         return Vec<T, 2, C>(x + rhs.x, y + rhs.y);
     }
 
-    Vec<T, 2, C> operator-(const Vec<T, 2, C>& rhs) const {
+    Vec operator-(const Vec<T, 2, C>& rhs) const {
         return Vec<T, 2, C>(x - rhs.x, y - rhs.y);
     }
 
-    Vec<T, 2, C> operator*(T factor) const {
+    Vec operator*(T factor) const {
         return Vec<T, 2, C>(x * factor, y * factor);
     }
 
-    Vec<T, 2, C> operator/(T factor) const {
+    Vec operator/(T factor) const {
         return Vec<T, 2, C>(x / factor, y / factor);
     }
 
@@ -372,41 +401,60 @@ public:
     T y;
     T z;
 
-    Vec<T, 3, C>() {
+    Vec() {
     }
 
-    template<bool B>
-    Vec<T, 3, C>(const Vec<T, 3, C>& other) :
+    Vec(const Vec<T, 3, C>& other) :
         x(other.x),
         y(other.y),
         z(other.z) {
     }
 
-    Vec<T, 3, C>(const Matrix<T, 1, 3>& other) :
+    template<bool B>
+    static Vec<T, 3, false> to_row(const Vec<T, 3, B>& other) {
+        Vec<T, 3, false> rval;
+        rval.x = other.x;
+        rval.y = other.y;
+        rval.z = other.z;
+        return rval;
+    }
+
+    template<bool B>
+    static Vec<T, 3> to_col(const Vec<T, 3, B>& other) {
+        Vec<T, 3> rval;
+        rval.x = other.x;
+        rval.y = other.y;
+        rval.z = other.z;
+        return rval;
+    }
+
+    Vec(const Matrix<T, 1, 3>& other) :
         x(other[0][0]),
         y(other[0][1]),
         z(other[0][2]) {
+        static_assert(C == false, "Mismatched vector/matrix dimensions");
     }
 
-    Vec<T, 3, C>(const Matrix<T, 3, 1>& other) :
+    Vec(const Matrix<T, 3, 1>& other) :
         x(other[0][0]),
         y(other[1][0]),
         z(other[2][0]) {
+        static_assert(C == true, "Mismatched vector/matrix dimensions");
     }
 
-    Vec<T, 3, C>(T x, T y, T z) :
+    Vec(T x, T y, T z) :
         x(x),
         y(y),
         z(z) {
     }
 
-    static Vec<T, 3, C> zeros() {
+    static Vec zeros() {
         Vec<T, 3, C> rval;
         rval.zero();
         return rval;
     }
 
-    ~Vec<T, 3, C>() {
+    ~Vec() {
     }
 
     auto magnitude() -> decltype(sqrt(T())) const {
@@ -427,54 +475,47 @@ public:
         *this /= magnitude();
     }
 
-    Vec<T, 3, C>& operator+=(const Vec<T, 3, C>& rhs) {
+    Vec& operator+=(const Vec<T, 3, C>& rhs) {
         x += rhs.x;
         y += rhs.y;
         z += rhs.z;
         return *this;
     }
 
-    Vec<T, 3, C>& operator-=(const Vec<T, 3, C>& rhs) {
+    Vec& operator-=(const Vec<T, 3, C>& rhs) {
         x -= rhs.x;
         y -= rhs.y;
         z -= rhs.z;
         return *this;
     }
 
-    Vec<T, 3, C>& operator*=(T factor) {
+    Vec& operator*=(T factor) {
         x *= factor;
         y *= factor;
         z *= factor;
         return *this;
     }
 
-    Vec<T, 3, C>& operator/=(T factor) {
+    Vec& operator/=(T factor) {
         x /= factor;
         y /= factor;
         z /= factor;
         return *this;
     }
 
-    Vec<T, 3, C>& operator=(const Vec<T, 3, C>& rhs) {
-        x = rhs.x;
-        y = rhs.y;
-        z = rhs.z;
-        return *this;
-    }
-
-    Vec<T, 3, C> operator+(const Vec<T, 3, C>& rhs) const {
+    Vec operator+(const Vec<T, 3, C>& rhs) const {
         return Vec<T, 3, C>(x + rhs.x, y + rhs.y, z + rhs.z);
     }
 
-    Vec<T, 3, C> operator-(const Vec<T, 3, C>& rhs) const {
+    Vec operator-(const Vec<T, 3, C>& rhs) const {
         return Vec<T, 3, C>(x - rhs.x, y - rhs.y, z - rhs.z);
     }
 
-    Vec<T, 3, C> operator*(T factor) const {
+    Vec operator*(T factor) const {
         return Vec<T, 3, C>(x * factor, y * factor, z * factor);
     }
 
-    Vec<T, 3, C> operator/(T factor) const {
+    Vec operator/(T factor) const {
         return Vec<T, 3, C>(x / factor, y / factor, z / factor);
     }
 
@@ -516,7 +557,7 @@ public:
         return 0.0;
     }
 
-    Vec<T, 3, C> cross(const Vec<T, 3, C>& other) const {
+    Vec cross(const Vec<T, 3, C>& other) const {
         return Vec<T, 3, C>(y * other.z - z * other.y,
                          z * other.x - x * other.z,
                          x * other.y - y * other.x);

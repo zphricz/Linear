@@ -288,10 +288,138 @@ int main() {
     cout << m_solve.slow_solve(Matrix<double, 3, 1>(m_rhs)) << endl << endl;
 
     // Testing conversions
-    Vec<double, 4, false> v_row;
-    Vec<double, 4> v_col = v_row;
-    Matrix<double, 4, 1> col_mat = v_col;
-    Matrix<double, 1, 4> row_mat = v_row;
+    {
+        Vec<double, 1, false> v_row;
+        Vec<double, 1> v_col = Vec<double, 1>::to_col(v_row);
+        v_col = Vec<double, 1>::to_col(v_col);
+        v_row = Vec<double, 1>::to_row(v_col);
+        v_row = Vec<double, 1>::to_row(v_row);
+        Matrix<double, 1, 1> col_mat = v_col;
+        Matrix<double, 1, 1> row_mat = v_row;
+        v_row = Vec<double, 1, false>(v_row);
+        v_col = Vec<double, 1>(v_col);
+        v_row = row_mat;
+        v_col = col_mat;
+        col_mat = row_mat;
+        row_mat = col_mat;
+        v_col = row_mat;
+        v_row = col_mat;
+        row_mat = v_col;
+        col_mat = v_row;
+
+        // ERRORS
+        //v_col = v_row;
+        //v_row = v_col;
+        
+        // Why does this work?
+        //Matrix<double, 1, 2> x_mat;
+        //v_col = x_mat;
+        //v_row = x_mat;
+        //x_mat = v_col;
+        //x_mat = v_row;
+    }
+    {
+        Vec<double, 2, false> v_row;
+        Vec<double, 2> v_col = Vec<double, 2>::to_col(v_row);
+        v_col = Vec<double, 2>::to_col(v_col);
+        v_row = Vec<double, 2>::to_row(v_col);
+        v_row = Vec<double, 2>::to_row(v_row);
+        Matrix<double, 2, 1> col_mat = v_col;
+        Matrix<double, 1, 2> row_mat = v_row;
+        v_row = Vec<double, 2, false>(v_row);
+        v_col = Vec<double, 2>(v_col);
+        v_row = row_mat;
+        v_col = col_mat;
+
+        // ERRORS
+        //v_col = row_mat;
+        //v_row = col_mat;
+        //col_mat = row_mat;
+        //row_mat = col_mat;
+        //v_col = v_row;
+        //v_row = v_col;
+        //row_mat = v_col;
+        //col_mat = v_row;
+        
+        //Matrix<double, 2, 5> x_mat;
+        //Matrix<double, 5, 2> y_mat;
+        //v_col = x_mat;
+        //v_row = x_mat;
+        //x_mat = v_col;
+        //x_mat = v_row;
+        //v_col = y_mat;
+        //v_row = y_mat;
+        //y_mat = v_col;
+        //y_mat = v_row;
+    }
+    {
+        Vec<double, 3, false> v_row;
+        Vec<double, 3> v_col = Vec<double, 3>::to_col(v_row);
+        v_col = Vec<double, 3>::to_col(v_col);
+        v_row = Vec<double, 3>::to_row(v_col);
+        v_row = Vec<double, 3>::to_row(v_row);
+        Matrix<double, 3, 1> col_mat = v_col;
+        Matrix<double, 1, 3> row_mat = v_row;
+        v_row = Vec<double, 3, false>(v_row);
+        v_col = Vec<double, 3>(v_col);
+        v_row = row_mat;
+        v_col = col_mat;
+
+        // ERRORS
+        //v_col = row_mat;
+        //v_row = col_mat;
+        //col_mat = row_mat;
+        //row_mat = col_mat;
+        //v_col = v_row;
+        //v_row = v_col;
+        //row_mat = v_col;
+        //col_mat = v_row;
+
+        //Matrix<double, 3, 2> x_mat;
+        //Matrix<double, 2, 3> y_mat;
+        //v_col = x_mat;
+        //v_row = x_mat;
+        //x_mat = v_col;
+        //x_mat = v_row;
+        //v_col = y_mat;
+        //v_row = y_mat;
+        //y_mat = v_col;
+        //y_mat = v_row;
+    }
+    {
+        Vec<double, 4, false> v_row;
+        Vec<double, 4> v_col = Vec<double, 4>::to_col(v_row);
+        v_col = Vec<double, 4>::to_col(v_col);
+        v_row = Vec<double, 4>::to_row(v_col);
+        v_row = Vec<double, 4>::to_row(v_row);
+        Matrix<double, 4, 1> col_mat = v_col;
+        Matrix<double, 1, 4> row_mat = v_row;
+        v_row = Vec<double, 4, false>(v_row);
+        v_col = Vec<double, 4>(v_col);
+        v_row = row_mat;
+        v_col = col_mat;
+
+        // ERRORS
+        //v_col = row_mat;
+        //v_row = col_mat;
+        //col_mat = row_mat;
+        //row_mat = col_mat;
+        //v_col = v_row;
+        //v_row = v_col;
+        //row_mat = v_col;
+        //col_mat = v_row;
+        
+        //Matrix<double, 4, 2> x_mat;
+        //Matrix<double, 2, 4> y_mat;
+        //v_col = x_mat;
+        //v_row = x_mat;
+        //x_mat = v_col;
+        //x_mat = v_row;
+        //v_col = y_mat;
+        //v_row = y_mat;
+        //y_mat = v_col;
+        //y_mat = v_row;
+    }
 
 #ifdef TEST_MATRIX_VECTOR
     cout << "CLASS VS NON-CLASS MATRIX VECTOR MULTIPLY TEST" << endl << endl;

@@ -9,42 +9,44 @@ private:
     std::array<std::array<T, N>, M> v;
 
 public:
-    Matrix<T, M, N>() {
+    Matrix() {
         static_assert(M > 0 && N > 0, "Matrix cannot have a zero dimension");
     }
 
-    Matrix<T, M, N>(const Matrix<T, M, N>& other) {
+    Matrix(const Matrix<T, M, N>& other) {
         static_assert(M > 0 && N > 0, "Matrix cannot have a zero dimension");
         v = other.v;
     }
 
-    ~Matrix<T, M, N>() {
+    ~Matrix() {
     }
 
     // Column vector
-    Matrix<T, M, 1>(const Vec<T, M>& other) {
+    Matrix(const Vec<T, M>& other) {
         static_assert(M > 0, "Matrix cannot have a zero dimension");
+        static_assert(N == 1, "Matrix does not share the vector's dimensions");
         for (size_t i = 0; i < M; ++i) {
             v[i][0] = other[i];
         }
     }
 
     // Row vector
-    Matrix<T, 1, N>(const Vec<T, N, false>& other) {
+    Matrix(const Vec<T, N, false>& other) {
         static_assert(N > 0, "Matrix cannot have a zero dimension");
+        static_assert(M == 1, "Matrix does not share the vector's dimensions");
         for (size_t i = 0; i < N; ++i) {
             v[0][i] = other[i];
         }
     }
 
-    static Matrix<T, M, N> zeros() {
+    static Matrix zeros() {
         static_assert(M > 0 && N > 0, "Matrix cannot have a zero dimension");
         Matrix<T, M, N> rval;
         rval.zero();
         return rval;
     }
 
-    static Matrix<T, M, N> identity() {
+    static Matrix identity() {
         static_assert(M > 0 && N > 0, "Matrix cannot have a zero dimension");
         static_assert(M == N, "Identity matrix must be square");
         Matrix<T, M, N> rval;
@@ -105,7 +107,7 @@ public:
         return v[i];
     }
 
-    Matrix<T, M, N> operator+(const Matrix<T, M, N>& rhs) const {
+    Matrix operator+(const Matrix<T, M, N>& rhs) const {
         Matrix<T, M, N> rval;
         for (size_t i = 0; i < M; ++i) {
             for (size_t j = 0; j < N; ++j) {
@@ -115,7 +117,7 @@ public:
         return rval;
     }
 
-    Matrix<T, M, N> operator-(const Matrix<T, M, N>& rhs) const {
+    Matrix operator-(const Matrix<T, M, N>& rhs) const {
         Matrix<T, M, N> rval;
         for (size_t i = 0; i < M; ++i) {
             for (size_t j = 0; j < N; ++j) {
@@ -125,7 +127,7 @@ public:
         return rval;
     }
 
-    Matrix<T, M, N>& operator+=(const Matrix<T, M, N>& rhs) {
+    Matrix& operator+=(const Matrix<T, M, N>& rhs) {
         for (size_t i = 0; i < M; ++i) {
             for (size_t j = 0; j < N; ++j) {
                 v[i][j] += rhs[i][j];
@@ -134,7 +136,7 @@ public:
         return *this;
     }
 
-    Matrix<T, M, N>& operator-=(const Matrix<T, M, N>& rhs) {
+    Matrix& operator-=(const Matrix<T, M, N>& rhs) {
         for (size_t i = 0; i < M; ++i) {
             for (size_t j = 0; j < N; ++j) {
                 v[i][j] -= rhs[i][j];
@@ -154,7 +156,7 @@ public:
         return rval;
     }
 
-    Matrix<T, M, N> operator*(T factor) const {
+    Matrix operator*(T factor) const {
         Matrix<T, M, N> rval;
         for (size_t i = 0; i < M; ++i) {
             for (size_t j = 0; j < N; ++j) {
@@ -178,7 +180,7 @@ public:
         return rval;
     }
 
-    Matrix<T, M, N> operator/(T factor) const {
+    Matrix operator/(T factor) const {
         Matrix<T, M, N> rval;
         for (size_t i = 0; i < M; ++i) {
             for (size_t j = 0; j < N; ++j) {
@@ -188,7 +190,7 @@ public:
         return rval;
     }
 
-    Matrix<T, M, N>& operator*=(T factor) {
+    Matrix& operator*=(T factor) {
         for (size_t i = 0; i < M; ++i) {
             for (size_t j = 0; j < N; ++j) {
                 v[i][j] *= factor;
@@ -197,13 +199,13 @@ public:
         return *this;
     }
     
-    Matrix<T, M, N>& operator*=(const Matrix<T, M, N>& rhs) {
+    Matrix& operator*=(const Matrix<T, M, N>& rhs) {
         static_assert(M == N, "Matrix dimensions must agree for in place "
                               "matrix multiply");
         return *this = *this * rhs;
     }
 
-    Matrix<T, M, N>& operator/=(T factor) {
+    Matrix& operator/=(T factor) {
         for (size_t i = 0; i < M; ++i) {
             for (size_t j = 0; j < N; ++j) {
                 v[i][j] /= factor;
