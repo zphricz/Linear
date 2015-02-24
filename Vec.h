@@ -7,6 +7,8 @@
 #include <stdint.h>
 #include <sstream>
 
+namespace Linear {
+
 template <typename T, size_t M, size_t N>
 class Matrix;
 
@@ -21,9 +23,18 @@ public:
         static_assert(N > 0, "Vector cannot have a zero dimension");
     }
 
-    Vec(const Vec<T, N, C>& other) { static_assert(N > 0, "Vector cannot have a zero dimension");
+    Vec(const Vec<T, N, C>& other) {
+        static_assert(N > 0, "Vector cannot have a zero dimension");
         for (size_t i = 0; i < N; ++i) {
             v[i] = other[i];
+        }
+    }
+
+    Vec(std::initializer_list<T> list) {
+        static_assert(N > 0, "Vector cannot have a zero dimension");
+        size_t i = 0;
+        for (auto it = list.begin(); it != list.end() && i < N; ++it, ++i) {
+            v[i] = *it;
         }
     }
 
@@ -250,6 +261,13 @@ public:
         y(other.y) {
     }
 
+    Vec(std::initializer_list<T> list) {
+        size_t i = 0;
+        for (auto it = list.begin(); it != list.end() && i < 2; ++it, ++i) {
+            (*this)[i] = *it;
+        }
+    }
+
     template<bool B>
     static Vec<T, 2, false> to_row(const Vec<T, 2, B>& other) {
         Vec<T, 2, false> rval;
@@ -358,14 +376,28 @@ public:
         return Vec<T, 2, C>(x / factor, y / factor);
     }
 
-    // Not safe, Prefer accessing x and y directly to this
+    // Prefer accessing x and y directly to this
     T& operator[](size_t index) {
-        return *(&x + index);
+        switch (index) {
+            case 0:
+                return x;
+            case 1:
+                return y;
+            default:
+                return *(T*)nullptr; // Not quite safe
+        }
     }
 
-    // Not safe, Prefer accessing x and y directly to this
+    // Prefer accessing x and y directly to this
     T operator[](size_t index) const {
-        return *(&x + index);
+        switch (index) {
+            case 0:
+                return x;
+            case 1:
+                return y;
+            default:
+                return *(volatile T*)nullptr; // Not quite safe
+        }
     }
 
     bool operator==(const Vec<T, 2, C>& rhs) const {
@@ -408,6 +440,13 @@ public:
         x(other.x),
         y(other.y),
         z(other.z) {
+    }
+
+    Vec(std::initializer_list<T> list) {
+        size_t i = 0;
+        for (auto it = list.begin(); it != list.end() && i < 3; ++it, ++i) {
+            (*this)[i] = *it;
+        }
     }
 
     template<bool B>
@@ -519,14 +558,32 @@ public:
         return Vec<T, 3, C>(x / factor, y / factor, z / factor);
     }
 
-    // Not safe, Prefer accessing x, y, and z directly to this
+    // Prefer accessing x, y, and z directly to this
     T& operator[](size_t index) {
-        return *(&x + index);
+        switch (index) {
+            case 0:
+                return x;
+            case 1:
+                return y;
+            case 2:
+                return z;
+            default:
+                return *(T*)nullptr; // Not quite safe
+        }
     }
 
-    // Not safe, Prefer accessing x, y, and z directly to this
+    // Prefer accessing x, y, and z directly to this
     T operator[](size_t index) const {
-        return *(&x + index);
+        switch (index) {
+            case 0:
+                return x;
+            case 1:
+                return y;
+            case 2:
+                return z;
+            default:
+                return *(volatile T*)nullptr; // Not quite safe
+        }
     }
 
     bool operator==(const Vec<T, 3, C>& rhs) const {
@@ -573,6 +630,8 @@ typedef Vec<int64_t, 3> Vec3i64;
 typedef Vec<uint8_t, 3> Vec3u8;
 typedef Vec<uint32_t, 3> Vec3u32;
 typedef Vec<uint64_t, 3> Vec3u64;
+
+}
 
 #endif
 

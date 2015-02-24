@@ -6,6 +6,7 @@
 
 using namespace std;
 using namespace chrono;
+using namespace Linear;
 
 #define TEST_MATRIX_VECTOR
 #define TEST_MATRIX_MATRIX
@@ -153,9 +154,7 @@ static double test_matrix_vector_no_class() {
 #endif
 
 int main() {
-    Vec2i64 v1;
-    v1.x = 4;
-    v1.y = 5;
+    Vec2i64 v1 = {4, 5};
     v1 = v1 * 8;
     v1 = 8 * v1;
     cout << v1 << endl;
@@ -249,36 +248,19 @@ int main() {
     cout << test_vec << endl << endl;
     cout << m3 * test_vec << endl << endl;
 
-    Matrix<double, 3> m_determine;
-    m_determine[0][0] = 0.0;
-    m_determine[0][1] = 0.1;
-    m_determine[0][2] = 0.2;
-    m_determine[1][0] = 4.0;
-    m_determine[1][1] = -3.2;
-    m_determine[1][2] = 0.0;
-    m_determine[2][0] = 2.1;
-    m_determine[2][1] = 2.1;
-    m_determine[2][2] = 9.4;
+    Matrix<double, 3> m_determine = {{0.0, 0.1, 0.2},
+                                     {4.0, -3.2, 0.0},
+                                     {2.1, 2.1, 9.4}};
     cout << "THE DETERMINANT OF" << endl << endl;
 
     cout << m_determine << endl << endl;
 
     cout << m_determine.determinant() << endl << endl;
 
-    Matrix<double, 3> m_solve;
-    m_solve[0][0] = 8.0;
-    m_solve[0][1] = 2.0;
-    m_solve[0][2] = -4.0;
-    m_solve[1][0] = 3.0;
-    m_solve[1][1] = 8.0;
-    m_solve[1][2] = 6.0;
-    m_solve[2][0] = 2.0;
-    m_solve[2][1] = 9.0;
-    m_solve[2][2] = 4.5;
-    Vec<double, 3> m_rhs;
-    m_rhs[0] = 4.0;
-    m_rhs[1] = 3.0;
-    m_rhs[2] = 4.0;
+    Matrix<double, 3> m_solve = {{8.0, 2.0, -4.0},
+                                 {3.0, 8.0, 6.0},
+                                 {2.0, 9.0, 4.5}};
+    Vec<double, 3> m_rhs = {4.0, 3.0, 4.0};
     cout << "THE SOLUTION TO" << endl << endl;
 
     cout << m_solve << endl << endl;
@@ -310,8 +292,6 @@ int main() {
         // ERRORS
         //v_col = v_row;
         //v_row = v_col;
-        
-        // Why does this work?
         //Matrix<double, 1, 2> x_mat;
         //v_col = x_mat;
         //v_row = x_mat;
@@ -340,7 +320,6 @@ int main() {
         //v_row = v_col;
         //row_mat = v_col;
         //col_mat = v_row;
-        
         //Matrix<double, 2, 5> x_mat;
         //Matrix<double, 5, 2> y_mat;
         //v_col = x_mat;
@@ -374,7 +353,6 @@ int main() {
         //v_row = v_col;
         //row_mat = v_col;
         //col_mat = v_row;
-
         //Matrix<double, 3, 2> x_mat;
         //Matrix<double, 2, 3> y_mat;
         //v_col = x_mat;
@@ -408,7 +386,6 @@ int main() {
         //v_row = v_col;
         //row_mat = v_col;
         //col_mat = v_row;
-        
         //Matrix<double, 4, 2> x_mat;
         //Matrix<double, 2, 4> y_mat;
         //v_col = x_mat;

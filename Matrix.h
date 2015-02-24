@@ -1,7 +1,15 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
-#include "Vec.h"
+//#include <algorithm>
+#include <array>
+#include <iomanip>
+#include <sstream>
+
+namespace Linear {
+
+template <typename T, size_t N, bool C>
+class Vec;
 
 template <typename T, size_t M, size_t N = M>
 class Matrix {
@@ -18,7 +26,16 @@ public:
         v = other.v;
     }
 
-    ~Matrix() {
+    Matrix(std::initializer_list<std::initializer_list<T>> list) {
+        static_assert(M > 0 && N > 0, "Matrix cannot have a zero dimension");
+        size_t i = 0;
+        for (auto it = list.begin(); it != list.end() && i < M; ++it, ++i) {
+            size_t j = 0;
+            for (auto sub_it = (*it).begin(); sub_it != (*it).end() && j < N;
+                    ++sub_it, ++j) {
+                v[i][j] = *sub_it;
+            }
+        }
     }
 
     // Column vector
@@ -37,6 +54,9 @@ public:
         for (size_t i = 0; i < N; ++i) {
             v[0][i] = other[i];
         }
+    }
+
+    ~Matrix() {
     }
 
     static Matrix zeros() {
@@ -325,6 +345,8 @@ std::ostream& operator<<(std::ostream& os, const Matrix<T, M, N>& rhs) {
         }
     }
     return os;
+}
+
 }
 
 #endif

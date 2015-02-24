@@ -1,4 +1,4 @@
-CXXFLAGS = -std=c++11 -Ofast -Wall -Werror
+CXXFLAGS = -std=c++11 -Ofast -fno-exceptions -Wall -Werror
 OS = $(shell uname -s)
 SRC = $(wildcard *.cpp)
 OBJECTS = $(patsubst %.cpp, %.o, $(SRC))
@@ -10,7 +10,7 @@ ifeq ($(OS), Darwin)
 	CXX = clang++
 endif
 ifeq ($(OS), Linux)
-	CXX = g++-4.9
+	CXX = g++
 endif
 
 all: $(ELFNAME)
