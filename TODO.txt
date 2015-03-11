@@ -1,2 +1,1 @@
-- Implement pitch roll and yaw in Vec<T, 3>
 - Add a fast linear equation solver

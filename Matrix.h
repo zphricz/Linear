@@ -21,12 +21,18 @@ public:
         static_assert(M > 0 && N > 0, "Matrix cannot have a zero dimension");
     }
 
-    Matrix(const Matrix<T, M, N>& other) {
+    template <typename U>
+    Matrix(const Matrix<U, M, N>& other) {
         static_assert(M > 0 && N > 0, "Matrix cannot have a zero dimension");
-        v = other.v;
+        for (size_t i = 0; i < M; ++i) {
+            for (size_t j = 0; j < N; ++j) {
+                v[i][j] = other[i][j];
+            }
+        }
     }
 
-    Matrix(std::initializer_list<std::initializer_list<T>> list) {
+    template <typename U>
+    Matrix(std::initializer_list<std::initializer_list<U>> list) {
         static_assert(M > 0 && N > 0, "Matrix cannot have a zero dimension");
         size_t i = 0;
         for (auto it = list.begin(); it != list.end() && i < M; ++it, ++i) {
@@ -322,12 +328,12 @@ Matrix<T, M, N> operator*(U f, const Matrix<T, M, N>& rhs) {
 
 template <typename T, size_t M, size_t N>
 std::ostream& operator<<(std::ostream& os, const Matrix<T, M, N>& rhs) {
-    Vec<size_t, N> v;
+    std::array<size_t, N> v;
     for (size_t j = 0; j < N; ++j) {
         v[j] = 0;
         for (size_t i = 0; i < M; ++i) {
             std::ostringstream s;
-            s << rhs[i][j];
+            s << +rhs[i][j];
             std::string str = s.str();
             if (str.size() > v[j]) {
                 v[j] = str.size();
@@ -337,7 +343,7 @@ std::ostream& operator<<(std::ostream& os, const Matrix<T, M, N>& rhs) {
     for (size_t i = 0; i < M; ++i) {
         os << "[ ";
         for (size_t j = 0; j < N; ++j) {
-            os << std::setw(v[j]) << rhs[i][j] << " ";
+            os << std::setw(v[j]) << +rhs[i][j] << " ";
         }
         os << "]";
         if (i != M - 1) {

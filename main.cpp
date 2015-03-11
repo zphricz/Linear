@@ -8,11 +8,14 @@ using namespace std;
 using namespace chrono;
 using namespace Linear;
 
+static const float PI = M_PI;
+
 #define TEST_MATRIX_VECTOR
 #define TEST_MATRIX_MATRIX
 //#define CLASS_FIRST
 #define MAT_DIM 50 // The extra dimension of the multiplied matrices
 #define MAT_TEST_SIZE 2000
+#define NUM_ROTATIONS 100000000
 #if 1
 #  define VEC_TEST_SIZE 20000 // twenty thousand
 #  define HEIGHT 100
@@ -272,10 +275,10 @@ int main() {
     // Testing conversions
     {
         Vec<double, 1, false> v_row;
-        Vec<double, 1> v_col = Vec<double, 1>::to_col(v_row);
-        v_col = Vec<double, 1>::to_col(v_col);
-        v_row = Vec<double, 1>::to_row(v_col);
-        v_row = Vec<double, 1>::to_row(v_row);
+        Vec<double, 1> v_col = to_col(v_row);
+        v_col = to_col(v_col);
+        v_row = to_row(v_col);
+        v_row = to_row(v_row);
         Matrix<double, 1, 1> col_mat = v_col;
         Matrix<double, 1, 1> row_mat = v_row;
         v_row = Vec<double, 1, false>(v_row);
@@ -300,10 +303,10 @@ int main() {
     }
     {
         Vec<double, 2, false> v_row;
-        Vec<double, 2> v_col = Vec<double, 2>::to_col(v_row);
-        v_col = Vec<double, 2>::to_col(v_col);
-        v_row = Vec<double, 2>::to_row(v_col);
-        v_row = Vec<double, 2>::to_row(v_row);
+        Vec<double, 2> v_col = to_col(v_row);
+        v_col = to_col(v_col);
+        v_row = to_row(v_col);
+        v_row = to_row(v_row);
         Matrix<double, 2, 1> col_mat = v_col;
         Matrix<double, 1, 2> row_mat = v_row;
         v_row = Vec<double, 2, false>(v_row);
@@ -333,10 +336,10 @@ int main() {
     }
     {
         Vec<double, 3, false> v_row;
-        Vec<double, 3> v_col = Vec<double, 3>::to_col(v_row);
-        v_col = Vec<double, 3>::to_col(v_col);
-        v_row = Vec<double, 3>::to_row(v_col);
-        v_row = Vec<double, 3>::to_row(v_row);
+        Vec<double, 3> v_col = to_col(v_row);
+        v_col = to_col(v_col);
+        v_row = to_row(v_col);
+        v_row = to_row(v_row);
         Matrix<double, 3, 1> col_mat = v_col;
         Matrix<double, 1, 3> row_mat = v_row;
         v_row = Vec<double, 3, false>(v_row);
@@ -366,10 +369,10 @@ int main() {
     }
     {
         Vec<double, 4, false> v_row;
-        Vec<double, 4> v_col = Vec<double, 4>::to_col(v_row);
-        v_col = Vec<double, 4>::to_col(v_col);
-        v_row = Vec<double, 4>::to_row(v_col);
-        v_row = Vec<double, 4>::to_row(v_row);
+        Vec<double, 4> v_col = to_col(v_row);
+        v_col = to_col(v_col);
+        v_row = to_row(v_col);
+        v_row = to_row(v_row);
         Matrix<double, 4, 1> col_mat = v_col;
         Matrix<double, 1, 4> row_mat = v_row;
         v_row = Vec<double, 4, false>(v_row);
@@ -396,6 +399,80 @@ int main() {
         //v_row = y_mat;
         //y_mat = v_col;
         //y_mat = v_row;
+    }
+
+    cout << "TESTING 3D VECTOR OPERATIONS" << endl << endl;
+    {
+        random_device rd;
+        mt19937 gen(rd());
+        uniform_real_distribution<float> dis(-PI, PI);
+        Vec3f v = {-1, 0, -1};
+        cout << v << endl;
+        cout << "PITCH: " << v.pitch() << " " << "YAW: " << v.yaw() << endl;
+        v = {-1, 0, 1};
+        cout << v << endl;
+        cout << "PITCH: " << v.pitch() << " " << "YAW: " << v.yaw() << endl;
+        v = {1, 0, 1};
+        cout << v << endl;
+        cout << "PITCH: " << v.pitch() << " " << "YAW: " << v.yaw() << endl;
+        v = {1, 0, -1};
+        cout << v << endl;
+        cout << "PITCH: " << v.pitch() << " " << "YAW: " << v.yaw() << endl;
+        v = {1, 0, 0};
+        cout << v << endl;
+        cout << "PITCH: " << v.pitch() << " " << "YAW: " << v.yaw() << endl;
+        v = {-1, 0, 0};
+        cout << v << endl;
+        cout << "PITCH: " << v.pitch() << " " << "YAW: " << v.yaw() << endl;
+        v = {0, 0, 1};
+        cout << v << endl;
+        cout << "PITCH: " << v.pitch() << " " << "YAW: " << v.yaw() << endl;
+        v = {0, 0, -1};
+        cout << v << endl;
+        cout << "PITCH: " << v.pitch() << " " << "YAW: " << v.yaw() << endl;
+        v = {0, 1, 0};
+        cout << v << endl;
+        cout << "PITCH: " << v.pitch() << " " << "YAW: " << v.yaw() << endl;
+        v = {0, -1, 0};
+        cout << v << endl;
+        cout << "PITCH: " << v.pitch() << " " << "YAW: " << v.yaw() << endl;
+        v = {1, 1, 1};
+        cout << v << endl;
+        cout << "PITCH: " << v.pitch() << " " << "YAW: " << v.yaw() << endl;
+        v = {1, 1, 0};
+        cout << v << endl;
+        cout << "PITCH: " << v.pitch() << " " << "YAW: " << v.yaw() << endl;
+        v = {0, 1, 1};
+        cout << v << endl;
+        cout << "PITCH: " << v.pitch() << " " << "YAW: " << v.yaw() << endl;
+
+        cout << endl;
+        v = {0, 0, 1};
+        v.normalize();
+        for (int i = 0; i < 10; ++i) {
+            cout << "PITCH: " << v.pitch() << "   " << "YAW: " << v.yaw() << "   ";
+            cout << "MAG: " << v.magnitude()  << endl;
+            v.rotate_x(0.1);
+            //v.rotate_yaw(PI / 10);
+        }
+        /*cout << endl;
+        v.rotate_yaw(PI / 2);
+        cout << "ROTATING YAW PI/2" << endl << endl;
+        for (int i = 0; i < 100; ++i) {
+            cout << "PITCH: " << v.pitch() / PI << "   " << "YAW: " << v.yaw() / PI << "   ";
+            cout << "MAG: " << v.magnitude()  << endl;
+            //v.rotate_pitch(PI / 10);
+            v.rotate_yaw(PI / 10);
+        }*/
+        cout << endl;
+        cout << "PITCH: " << v.pitch() << "   " << "YAW: " << v.yaw() << "   ";
+        cout << "MAG: " << v.magnitude() << endl;
+        high_resolution_clock::time_point t1 = high_resolution_clock::now();
+        for (int i = 0; i < NUM_ROTATIONS; ++i) {
+            v.rotate_y(0.1);
+        }
+        high_resolution_clock::time_point t2 = high_resolution_clock::now();
+        cout << "TIME TAKEN TO DO " << NUM_ROTATIONS << " MANY VECTOR ROTATIONS: " << duration_cast<duration<float>>(t2 - t1).count() << "s" << endl << endl;
     }
 
 #ifdef TEST_MATRIX_VECTOR

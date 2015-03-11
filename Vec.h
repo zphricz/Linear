@@ -7,6 +7,9 @@
 #include <stdint.h>
 #include <sstream>
 
+/*template <typename T>
+constexpr pi<T> = T(M_PI);*/
+
 namespace Linear {
 
 template <typename T, size_t M, size_t N>
@@ -23,14 +26,16 @@ public:
         static_assert(N > 0, "Vector cannot have a zero dimension");
     }
 
-    Vec(const Vec<T, N, C>& other) {
+    template <typename U>
+    Vec(const Vec<U, N, C>& other) {
         static_assert(N > 0, "Vector cannot have a zero dimension");
         for (size_t i = 0; i < N; ++i) {
             v[i] = other[i];
         }
     }
 
-    Vec(std::initializer_list<T> list) {
+    template <typename U>
+    Vec(std::initializer_list<U> list) {
         static_assert(N > 0, "Vector cannot have a zero dimension");
         size_t i = 0;
         for (auto it = list.begin(); it != list.end() && i < N; ++it, ++i) {
@@ -63,26 +68,6 @@ public:
         v[0] = other[0][0];
     }
 
-    template<bool B>
-    static Vec<T, N, false> to_row(const Vec<T, N, B>& other) {
-        Vec<T, N, false> rval;
-        static_assert(N > 0, "Vector cannot have a zero dimension");
-        for (size_t i = 0; i < N; ++i) {
-            rval[i] = other[i];
-        }
-        return rval;
-    }
-
-    template<bool B>
-    static Vec<T, N> to_col(const Vec<T, N, B>& other) {
-        Vec<T, N> rval;
-        static_assert(N > 0, "Vector cannot have a zero dimension");
-        for (size_t i = 0; i < N; ++i) {
-            rval[i] = other[i];
-        }
-        return rval;
-    }
-
     static Vec zeros() {
         static_assert(N > 0, "Vector cannot have a zero dimension");
         Vec<T, N, C> rval;
@@ -98,7 +83,7 @@ public:
     }
 
     T magnitude_square() const {
-        T sum = T();
+        T sum = T(0);
         for (size_t i = 0; i < N; ++i) {
             sum += v[i] * v[i];
         }
@@ -107,7 +92,7 @@ public:
 
     void zero() {
         for (size_t i = 0; i < N; ++i) {
-            v[i] = T();
+            v[i] = T(0);
         }
     }
 
@@ -192,7 +177,7 @@ public:
     }
 
     T dot(const Vec<T, N, C>& other) const {
-        T sum = T();
+        T sum = T(0);
         for (size_t i = 0; i < N; ++i) {
             sum += v[i] * other[i];
         }
@@ -204,6 +189,26 @@ public:
     }
 };
 
+template<typename T, size_t N, bool C>
+Vec<T, N, false> to_row(const Vec<T, N, C>& other) {
+    Vec<T, N, false> rval;
+    static_assert(N > 0, "Vector cannot have a zero dimension");
+    for (size_t i = 0; i < N; ++i) {
+        rval[i] = other[i];
+    }
+    return rval;
+}
+
+template<typename T, size_t N, bool C>
+Vec<T, N> to_col(const Vec<T, N, C>& other) {
+    Vec<T, N> rval;
+    static_assert(N > 0, "Vector cannot have a zero dimension");
+    for (size_t i = 0; i < N; ++i) {
+        rval[i] = other[i];
+    }
+    return rval;
+}
+
 /* Prints out the vector as a column vector
  */
 template <typename T, size_t N, bool C>
@@ -214,7 +219,7 @@ std::ostream& operator<<(std::ostream& os, const Vec<T, N, C>& rhs) {
     size_t max_size = 0;
     for (size_t i = 0; i < N; ++i) {
         std::ostringstream s;
-        s << rhs[i];
+        s << +rhs[i];
         std::string str = s.str();
         if (str.size() > max_size) {
             max_size = str.size();
@@ -222,7 +227,7 @@ std::ostream& operator<<(std::ostream& os, const Vec<T, N, C>& rhs) {
     }
     for (size_t i = 0; i < N; ++i) {
         if (C) {
-            os << "[ " << std::setw(max_size) << rhs[i] << " ]";
+            os << "[ " << std::setw(max_size) << +rhs[i] << " ]";
             if (i != N - 1) {
                 os << std::endl;
             }
@@ -256,32 +261,18 @@ public:
     Vec() {
     }
 
-    Vec(const Vec<T, 2, C>& other) :
+    template <typename U>
+    Vec(const Vec<U, 2, C>& other) :
         x(other.x),
         y(other.y) {
     }
 
-    Vec(std::initializer_list<T> list) {
+    template <typename U>
+    Vec(std::initializer_list<U> list) {
         size_t i = 0;
         for (auto it = list.begin(); it != list.end() && i < 2; ++it, ++i) {
             (*this)[i] = *it;
         }
-    }
-
-    template<bool B>
-    static Vec<T, 2, false> to_row(const Vec<T, 2, B>& other) {
-        Vec<T, 2, false> rval;
-        rval.x = other.x;
-        rval.y = other.y;
-        return rval;
-    }
-
-    template<bool B>
-    static Vec<T, 2> to_col(const Vec<T, 2, B>& other) {
-        Vec<T, 2> rval;
-        rval.x = other.x;
-        rval.y = other.y;
-        return rval;
     }
 
     Vec(const Matrix<T, 1, 2>& other) :
@@ -328,8 +319,8 @@ public:
     }
 
     void zero() {
-        x = T();
-        y = T();
+        x = T(0);
+        y = T(0);
     }
 
     void normalize() {
@@ -436,35 +427,19 @@ public:
     Vec() {
     }
 
-    Vec(const Vec<T, 3, C>& other) :
+    template <typename U>
+    Vec(const Vec<U, 3, C>& other) :
         x(other.x),
         y(other.y),
         z(other.z) {
     }
 
-    Vec(std::initializer_list<T> list) {
+    template <typename U>
+    Vec(std::initializer_list<U> list) {
         size_t i = 0;
         for (auto it = list.begin(); it != list.end() && i < 3; ++it, ++i) {
             (*this)[i] = *it;
         }
-    }
-
-    template<bool B>
-    static Vec<T, 3, false> to_row(const Vec<T, 3, B>& other) {
-        Vec<T, 3, false> rval;
-        rval.x = other.x;
-        rval.y = other.y;
-        rval.z = other.z;
-        return rval;
-    }
-
-    template<bool B>
-    static Vec<T, 3> to_col(const Vec<T, 3, B>& other) {
-        Vec<T, 3> rval;
-        rval.x = other.x;
-        rval.y = other.y;
-        rval.z = other.z;
-        return rval;
     }
 
     Vec(const Matrix<T, 1, 3>& other) :
@@ -481,6 +456,12 @@ public:
         static_assert(C == true, "Mismatched vector/matrix dimensions");
     }
 
+    Vec(T _pitch, T _yaw) :
+        x(cos(_pitch) * sin(_yaw)),
+        y(sin(_pitch)),
+        z(cos(_pitch) * cos(_yaw)) {
+    }
+
     Vec(T x, T y, T z) :
         x(x),
         y(y),
@@ -491,6 +472,18 @@ public:
         Vec<T, 3, C> rval;
         rval.zero();
         return rval;
+    }
+
+    static Vec x_axis() {
+        return Vec<T, 3, C>(T(1), T(0), T(0));
+    }
+
+    static Vec y_axis()  {
+        return Vec<T, 3, C>(T(0), T(1), T(0));
+    }
+
+    static Vec z_axis() {
+        return Vec<T, 3, C>(T(0), T(0), T(1));
     }
 
     ~Vec() {
@@ -505,9 +498,9 @@ public:
     }
 
     void zero() {
-        x = T();
-        y = T();
-        z = T();
+        x = T(0);
+        y = T(0);
+        z = T(0);
     }
 
     void normalize() {
@@ -602,16 +595,56 @@ public:
         return 3;
     }
 
-    T pitch() const {
-        return 0.0;
+
+    /* ^
+     * |
+     * |
+     * |
+     * Y  (changes in height along Y)
+     * |
+     * |
+     * |
+     * v
+     *  <--------X-------->
+     */
+    
+    // A vector laying entirely within the xz plane has a pitch of 0.0
+    // As the vector points towards the positive y axis, it's pitch increases
+    // As the vector points towards the negative y axis, it's pitch decreases
+    auto pitch() -> decltype(atan2(sqrt(T() * T() + T() * T()), T())) const {
+        return atan2(y, sqrt(x * x + z * z));
     }
 
-    T roll() const {
-        return 0.0;
+    // A vector pointing entirely along the positive z axis has a yaw of 0.0
+    // As the vector points towards the positive x axis, it's yaw increases
+    // As the vector points towards the negative x axis, it's yaw decreases
+    auto yaw() -> decltype(atan2(T(), T())) const {
+        return atan2(x, z);
     }
 
-    T yaw() const {
-        return 0.0;
+    void rotate(const Vec<T, 3>& axis, T theta) {
+        *this = *this * cos(theta) + (axis.cross(*this)) * sin(theta) +
+            axis * (axis.dot(*this)) * (1 - cos(theta));
+    }
+
+    void rotate_x(T theta) {
+        rotate(x_axis(), theta);
+    }
+
+    void rotate_y(T theta) {
+        rotate(y_axis(), theta);
+    }
+    
+    void rotate_z(T theta) {
+        rotate(z_axis(), theta);
+    }
+
+    // Reflects this vector along the plane specified by normal
+    Vec reflect(const Vec<T, 3, C>& normal) {
+        T d = this->dot(normal);
+        return Vec<T, 3, C>(x - 2 * d * normal.x,
+                            y - 2 * d * normal.y,
+                            z - 2 * d * normal.z);
     }
 
     Vec cross(const Vec<T, 3, C>& other) const {
